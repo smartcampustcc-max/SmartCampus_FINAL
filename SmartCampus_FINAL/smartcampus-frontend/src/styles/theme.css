@@ -1,0 +1,568 @@
+/* ===============================
+   SMARTCAMPUS – DESIGN SYSTEM
+   =============================== */
+
+/* 🎨 Paleta oficial */
+:root {
+  --sc-dark: #001D39;
+  --sc-primary: #0A4174;
+  --sc-secondary: #49769F;
+  --sc-accent: #4E8EA2;
+  --sc-light: #6EA2B3;
+  --sc-sky: #7BBDE8;
+  --sc-bg: #BDD8E9;
+
+  --sc-white: #ffffff;
+  --sc-text: #0f172a;
+  --sc-muted: #64748b;
+
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+
+  --shadow-sm: 0 4px 10px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 10px 30px rgba(0, 0, 0, 0.12);
+}
+
+/* ===============================
+   RESET BÁSICO
+   =============================== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", Roboto, Ubuntu, "Helvetica Neue", sans-serif;
+  background: linear-gradient(
+    135deg,
+    var(--sc-bg),
+    var(--sc-sky)
+  );
+  color: var(--sc-text);
+}
+
+/* ===============================
+   ELEMENTOS BASE
+   =============================== */
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+button {
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+input,
+select,
+textarea {
+  font-family: inherit;
+}
+
+/* ===============================
+   BOTÕES
+   =============================== */
+.btn-primary {
+  background: linear-gradient(
+    135deg,
+    var(--sc-primary),
+    var(--sc-accent)
+  );
+  color: var(--sc-white);
+  padding: 12px 18px;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  transition: all 0.25s ease;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.btn-secondary {
+  background: var(--sc-secondary);
+  color: var(--sc-white);
+  padding: 10px 16px;
+  border-radius: var(--radius-sm);
+}
+
+/* ===============================
+   CARDS
+   =============================== */
+.card {
+  background: var(--sc-white);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  box-shadow: var(--shadow-sm);
+}
+
+.card-title {
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.card-muted {
+  color: var(--sc-muted);
+  font-size: 0.9rem;
+}
+
+/* ===============================
+   INPUTS
+   =============================== */
+.input {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: var(--radius-sm);
+  border: 1px solid #e2e8f0;
+  outline: none;
+  transition: border 0.2s ease;
+}
+
+.input:focus {
+  border-color: var(--sc-primary);
+}
+
+/* ===============================
+   LAYOUTS
+   =============================== */
+.page {
+  padding: 24px;
+}
+
+.page-title {
+  font-size: 1.4rem;
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+
+/* ===============================
+   SIDEBAR (base)
+   =============================== */
+.sidebar {
+  background: linear-gradient(
+    180deg,
+    var(--sc-dark),
+    var(--sc-primary)
+  );
+  color: var(--sc-white);
+}
+
+/* ===============================
+   TOPBAR (base)
+   =============================== */
+.topbar {
+  background: var(--sc-white);
+  box-shadow: var(--shadow-sm);
+}
+
+/* ===============================
+   LOGIN (Premium)
+   =============================== */
+.sc-login-wrap{
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 18px;
+}
+
+.sc-login-card{
+  width: min(1040px, 96vw);
+  min-height: 520px;
+  border-radius: 26px;
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  box-shadow: 0 20px 60px rgba(0,0,0,.18);
+  border: 1px solid rgba(255,255,255,.25);
+  background: rgba(255,255,255,.18);
+  backdrop-filter: blur(10px);
+}
+
+.sc-login-left{
+  padding: 34px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background:
+    radial-gradient(800px 420px at 25% 10%, rgba(123,189,232,.55), transparent 60%),
+    linear-gradient(135deg, rgba(255,255,255,.78), rgba(255,255,255,.28));
+}
+
+.sc-login-logo{
+  width: 92px;
+  height: 92px;
+  object-fit: contain;
+  margin-bottom: 12px;
+}
+
+.sc-login-brand{
+  font-size: 44px;
+  font-weight: 950;
+  letter-spacing: .2px;
+  color: var(--sc-dark);
+}
+
+.sc-login-desc{
+  margin-top: 10px;
+  max-width: 440px;
+  color: rgba(0,29,57,.72);
+  line-height: 1.55;
+}
+
+.sc-login-right{
+  padding: 34px;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background: linear-gradient(160deg, rgba(0,29,57,0.92), rgba(10,65,116,0.92));
+}
+
+.sc-login-title{
+  font-size: 34px;
+  font-weight: 950;
+}
+
+.sc-login-sub{
+  margin-top: 10px;
+  color: rgba(255,255,255,.75);
+  line-height: 1.5;
+}
+
+.sc-login-label{
+  display: block;
+  font-weight: 850;
+  margin: 14px 0 8px;
+  color: rgba(255,255,255,.88);
+}
+
+.sc-login-input{
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,.18);
+  outline: none;
+  background: rgba(255,255,255,.12);
+  color: #fff;
+}
+
+.sc-login-hint{
+  margin-top: 10px;
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+  font-size: 12px;
+  color: rgba(255,255,255,.7);
+  font-weight: 650;
+}
+
+.sc-login-msg{
+  margin-top: 12px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  background: rgba(239,68,68,.18);
+  border: 1px solid rgba(239,68,68,.35);
+  color: #fff;
+  font-weight: 850;
+}
+
+/* ===============================
+   SIDEBAR (GLOBAL)
+   =============================== */
+.sidebar {
+  background: linear-gradient(180deg, #0A4174, #06325A);
+  color: #fff;
+  box-shadow: inset -1px 0 0 rgba(255,255,255,.08);
+}
+
+.sidebar a {
+  transition: all .15s ease;
+}
+
+.sidebar a:hover {
+  background: rgba(255,255,255,.18) !important;
+}
+
+.sidebar a.active {
+  background: #F9FAFB !important;
+  color: #0A4174 !important;
+}
+
+/* ===============================
+   TOPBAR (GLOBAL)
+   =============================== */
+.topbar {
+  background: rgba(255,255,255,.85);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(0,0,0,.06);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.topbar h1,
+.topbar h2,
+.topbar h3 {
+  margin: 0;
+}
+
+.topbar small {
+  color: rgba(0,0,0,.55);
+  font-weight: 600;
+}
+
+/* ===============================
+   DASHBOARD UI (GLOBAL)
+   =============================== */
+.sc-grid {
+  display: grid;
+  gap: 14px;
+}
+
+.sc-grid-4 {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.sc-grid-3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+@media (max-width: 980px) {
+  .sc-grid-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .sc-grid-3 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 560px) {
+  .sc-grid-4, .sc-grid-3 { grid-template-columns: 1fr; }
+}
+
+.sc-stat {
+  border-radius: 18px;
+  padding: 16px;
+  background: rgba(255,255,255,.9);
+  border: 1px solid rgba(0,0,0,.06);
+  box-shadow: var(--shadow-sm);
+}
+
+.sc-stat .kpi {
+  font-size: 26px;
+  font-weight: 950;
+  color: var(--sc-dark);
+  margin-top: 6px;
+}
+
+.sc-stat .label {
+  font-weight: 900;
+  color: rgba(0,0,0,.72);
+}
+
+.sc-stat .meta {
+  margin-top: 6px;
+  color: rgba(0,0,0,.55);
+  font-size: 12px;
+  font-weight: 650;
+}
+
+/* =========================
+   SMARTCAMPUS — Admin UI
+   (tabelas + forms + badges)
+   ========================= */
+
+.sc-toolbar {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 10px;
+}
+
+.sc-search {
+  flex: 1;
+  min-width: 240px;
+  display: flex;
+  gap: 10px;
+}
+
+.sc-input, .sc-select {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.10);
+  background: rgba(255,255,255,0.06);
+  color: #eaf2ff;
+  outline: none;
+}
+
+.sc-input::placeholder { color: rgba(234,242,255,0.55); }
+
+.sc-btn {
+  border: 0;
+  cursor: pointer;
+  border-radius: 12px;
+  padding: 10px 14px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+}
+
+.sc-btn-primary {
+  background: linear-gradient(135deg, #0A4174, #4E8EA2);
+  color: white;
+  box-shadow: 0 10px 22px rgba(10, 65, 116, 0.28);
+}
+
+.sc-btn-ghost {
+  background: rgba(255,255,255,0.08);
+  color: #eaf2ff;
+  border: 1px solid rgba(255,255,255,0.14);
+}
+
+.sc-btn-danger {
+  background: rgba(255, 90, 90, 0.12);
+  color: #ffb8b8;
+  border: 1px solid rgba(255, 90, 90, 0.22);
+}
+
+.sc-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #eaf2ff;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.14);
+}
+
+.sc-badge-ok { color: #bff5d1; border-color: rgba(150,255,190,0.22); background: rgba(150,255,190,0.10); }
+.sc-badge-warn { color: #ffe8a6; border-color: rgba(255,220,130,0.25); background: rgba(255,220,130,0.10); }
+
+.sc-table {
+  width: 100%;
+  border-collapse: collapse;
+  overflow: hidden;
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,0.12);
+  background: rgba(255,255,255,0.04);
+}
+
+.sc-table th, .sc-table td {
+  padding: 12px 14px;
+  border-bottom: 1px solid rgba(255,255,255,0.10);
+  text-align: left;
+  color: #eaf2ff;
+}
+
+.sc-table thead th {
+  font-size: 12px;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+  color: rgba(234,242,255,0.70);
+  background: rgba(255,255,255,0.03);
+}
+
+.sc-empty {
+  padding: 18px;
+  border-radius: 16px;
+  border: 1px dashed rgba(255,255,255,0.22);
+  background: rgba(255,255,255,0.03);
+  color: rgba(234,242,255,0.75);
+}
+
+.sc-split {
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  gap: 16px;
+}
+
+@media (max-width: 900px) {
+  .sc-split { grid-template-columns: 1fr; }
+}
+
+/* ===== FIX CONTRASTE (tirar "fusco") ===== */
+:root{
+  --bg: #F6F8FC;
+  --card: #FFFFFF;
+  --text: #0B1B2A;
+  --muted: rgba(11,27,42,.65);
+  --border: rgba(11,27,42,.10);
+}
+
+/* garante que nada fica com opacity/blur herdado */
+.page, .card, .tableWrap, .table, main, .content {
+  opacity: 1 !important;
+  filter: none !important;
+  backdrop-filter: none !important;
+}
+
+body{
+  background: var(--bg) !important;
+  color: var(--text) !important;
+}
+
+.pageTitle{ color: var(--text) !important; }
+.pageSub{ color: var(--muted) !important; }
+
+.card{
+  background: var(--card) !important;
+  border: 1px solid var(--border) !important;
+  box-shadow: 0 10px 30px rgba(11,27,42,.08) !important;
+}
+
+.table th{
+  color: var(--text) !important;
+  background: rgba(11,27,42,.03) !important;
+  border-bottom: 1px solid var(--border) !important;
+}
+
+.table td{
+  color: var(--text) !important;
+  border-bottom: 1px solid rgba(11,27,42,.06) !important;
+}
+
+.rowSub, .hint, .muted{
+  color: var(--muted) !important;
+}
+
+.btn{
+  opacity: 1 !important;
+  filter: none !important;
+}
+
+/* FIX: impedir "fusco" no conteúdo */
+#root, body {
+  filter: none !important;
+}
+
+.shell-main, .shell-content, main, .page, .content {
+  opacity: 1 !important;
+  filter: none !important;
+  backdrop-filter: none !important;
+}
+
+:root{
+  --sc-bg: #EAF2FF;         /* fundo claro */
+  --sc-surface: #FFFFFF;    /* cartões e conteúdo */
+  --sc-border: rgba(0,29,57,.10);
+  --sc-muted: rgba(0,29,57,.60);
+}
+
+/* Garantia anti-fusco */
+.page, .sc-card {
+  opacity: 1 !important;
+  filter: none !important;
+  backdrop-filter: none !important;
+}
+
