@@ -1,4 +1,5 @@
 import { Routes, Route, Navigate } from "react-router-dom";
+import Home from "./pages/Home";
 import Login from "./pages/Login";
 
 import RequireAuth from "./auth/RequireAuth";
@@ -11,6 +12,7 @@ import Administradores from "./pages/SuperAdmin/Administradores";
 import Escolas from "./pages/SuperAdmin/Escolas"; */
 
 /* ================= ADMIN ESCOLA ================= */
+
 import AdminLayout from "./layouts/AdminLayout";
 import DashboardAdmin from "./pages/admin/Dashboard";
 import Turmas from "./pages/admin/Turmas";
@@ -39,6 +41,7 @@ import DisciplinasAluno from "./pages/student/Disciplinas";
 import HorarioAluno from "./pages/student/Horario";
 import MateriaisAluno from "./pages/student/Materiais";
 import NotasAluno from "./pages/student/Notas";
+import FaltasAluno from "./pages/student/Faltas";
 import MensagensAluno from "./pages/student/Mensagens";
 import NotificacoesAluno from "./pages/student/Notificacoes";
 import AgendaAluno from "./pages/student/Agenda";
@@ -51,6 +54,7 @@ import AlterarSenha from "./pages/AlterarSenha";
 export default function App() {
   return (
     <Routes>
+      <Route path="/" element={<Home />} />
       <Route path="/login" element={<Login />} />
 
       <Route element={<RequireAuth />}>
@@ -104,6 +108,7 @@ export default function App() {
             <Route path="horario" element={<HorarioAluno />} />
             <Route path="materiais" element={<MateriaisAluno />} />
             <Route path="notas" element={<NotasAluno />} />
+            <Route path="faltas" element={<FaltasAluno />} />
             <Route path="mensagens" element={<MensagensAluno />} />
             <Route path="agenda" element={<AgendaAluno />} />
             <Route path="pomodoro" element={<PomodoroAluno />} />
@@ -113,7 +118,6 @@ export default function App() {
         </Route>
       </Route>
  <Route path="/alterar-senha" element={<AlterarSenha />} />
-      <Route path="/" element={<Navigate to="/login" replace />} />
       <Route path="*" element={<Navigate to="/login" replace />} />
     </Routes>
   );

@@ -153,6 +153,18 @@ Route::middleware('auth:sanctum')->group(function () {
         
         Route::get('chats', [AdminChatController::class, 'index']);
         Route::get('chats/{turmaId}/{disciplinaId}', [AdminChatController::class, 'show']);
+        Route::get('notificacoes', function () {
+    return \App\Models\Notificacao::where('user_id', auth()->id())
+        ->orderByDesc('created_at')
+        ->get();
+});
+Route::post('notificacoes/ler', function () {
+    \App\Models\Notificacao::where('user_id', auth()->id())
+        ->where('lida', false)
+        ->update(['lida' => true]);
+
+    return response()->json(['success' => true]);
+});
        
     });
 
@@ -181,6 +193,13 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('chat/mensagens', [ChatController::class, 'index']);
         Route::post('chat/mensagens', [ChatController::class, 'store']);
         Route::get('notificacoes', [PainelController::class, 'notificacoes']);
+        Route::post('notificacoes/ler', function () {
+    \App\Models\Notificacao::where('user_id', auth()->id())
+        ->where('lida', false)
+        ->update(['lida' => true]);
+
+    return response()->json(['success' => true]);
+});
 
 
         Route::get('materiais', [ProfessorMateriaisController::class, 'index']);
@@ -213,5 +232,12 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('horarios', [PerfilController::class, 'horarios']);
 
         Route::get('avisos', [PerfilController::class, 'avisos']);
+        Route::post('notificacoes/ler', function () {
+        \App\Models\Notificacao::where('user_id', auth()->id())
+        ->where('lida', false)
+        ->update(['lida' => true]);
+
+    return response()->json(['success' => true]);
+});
     });
 });

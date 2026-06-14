@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Schema;
 use Carbon\Carbon;
 use App\Models\Atribuicao;
-use App\Models\AdminAviso;
+use App\Models\Aviso;
 use App\Models\Nota;
 use App\Models\ProfessorLembrete;
 use App\Models\ProfessorEvento;
@@ -37,23 +37,22 @@ class PainelController extends Controller
         ->orderByDesc('id')
         ->get();
 
-        $avisosAdmin = collect();
-        if (Schema::hasTable('admin_avisos')) {
-            $avisosAdmin = AdminAviso::where('escola_id', $user->escola_id)
-                ->orderByDesc('id')
-                ->limit(10)
-                ->get()
-                ->map(function ($item) {
-                    return [
-                        'id' => $item->id,
-                        'titulo' => $item->titulo,
-                        'texto' => $item->texto,
-                        'created_at' => $item->created_at,
-                        'created_at_formatado' => optional($item->created_at)->format('d/m/Y H:i'),
-                    ];
-                })
-                ->values();
-        }
+       $avisosAdmin = Aviso::where('escola_id', $user->escola_id)
+    ->whereIn('destino', ['Todos', 'Professores'])
+    ->orderByDesc('id')
+    ->limit(10)
+    ->get()
+    ->map(function ($item) {
+        return [
+            'id' => $item->id,
+            'titulo' => $item->titulo,
+            'texto' => $item->mensagem ?? $item->conteudo ?? '',
+            'destino' => $item->destino,
+            'created_at' => $item->created_at,
+            'created_at_formatado' => optional($item->created_at)->format('d/m/Y H:i'),
+        ];
+    })
+    ->values();
 
         $meusLembretes = collect();
         if (Schema::hasTable('professor_lembretes')) {

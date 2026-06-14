@@ -408,20 +408,21 @@ export default function DashboardProfessor() {
               {avisosAdmin.length === 0 ? (
                 <div style={styles.empty}>Ainda não tens avisos do administrador.</div>
               ) : (
-                avisosAdmin.map((n) => (
-                  <div key={n.id} style={styles.notice}>
-                    <div style={{ fontWeight: 900 }}>{n.titulo || n.texto}</div>
-                    {!!n.texto && !!n.titulo && (
-                      <div style={{ marginTop: 6, color: "#0B1B2A", fontWeight: 650 }}>
-                        {n.texto}
-                      </div>
-                    )}
-                    <div style={styles.noticeDate}>
-                      {n.created_at_formatado || n.data || n.created_at}
-                    </div>
-                  </div>
-                ))
-              )}
+               avisosAdmin.map((n) => (
+  <div key={n.id} style={styles.notice}>
+    <div style={{ fontWeight: 900 }}>
+      {n.titulo || "Aviso"}
+    </div>
+
+    <div style={{ marginTop: 6, color: "#0B1B2A", fontWeight: 650 }}>
+      {n.texto || n.mensagem || n.conteudo || "-"}
+    </div>
+
+    <div style={styles.noticeDate}>
+      {n.created_at_formatado || n.data || n.created_at}
+    </div>
+  </div>
+)))}
             </div>
           </div>
         </div>

@@ -9,6 +9,9 @@ import {
   MapPin,
   GraduationCap,
   X,
+  ClipboardList,
+  AlertTriangle,
+  Bell,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import http from "../../api/http";
@@ -21,6 +24,7 @@ export default function DashboardAluno() {
   const [erro, setErro] = useState("");
   const [horarios, setHorarios] = useState([]);
 const [horarioOpen, setHorarioOpen] = useState(false);
+const [avisos,setAvisos] = useState ([]);
 
   const user = getUser();
 
@@ -33,6 +37,8 @@ const [horarioOpen, setHorarioOpen] = useState(false);
         setPerfil(res.data);
         const horariosRes = await http.get("/estudante/horarios");
       setHorarios(Array.isArray(horariosRes.data) ? horariosRes.data : []);
+      const avisosRes = await http.get("/estudante/avisos");
+setAvisos(Array.isArray(avisosRes.data) ? avisosRes.data : []);
       } catch (err) {
         setErro(
           err?.response?.data?.message ||
@@ -51,6 +57,10 @@ const [horarioOpen, setHorarioOpen] = useState(false);
   const curso = perfil?.curso?.nome || "Sem curso";
   const matricula = perfil?.numero_aluno || "-";
   const estado = perfil?.status || "Ativo";
+  const [notas, setNotas] = useState([]);
+  const [faltas, setFaltas] = useState([]);
+  const [avisosAdmin, setAvisosAdmin] = useState([]);
+  const numeroTurma = perfil?.numero_turma || "-";
 
   const cards = useMemo(
     () => [
@@ -64,18 +74,18 @@ const [horarioOpen, setHorarioOpen] = useState(false);
         value: loading ? "..." : curso,
         icon: <GraduationCap size={16} />,
       },
-      {
-        label: "Matrícula",
-        value: loading ? "..." : matricula,
-        icon: <Hash size={16} />,
-      },
+     {
+  label: "Nº",
+  value: loading ? "..." : numeroTurma,
+  icon: <Hash size={16} />,
+},
       {
         label: "Estado",
         value: loading ? "..." : estado,
         icon: <BadgeCheck size={16} />,
       },
     ],
-    [loading, turma, curso, matricula, estado]
+   [loading, turma, curso, numeroTurma, estado]
   );
 const proximasAulas = useMemo(() => {
   return horarios.slice(0, 4);
@@ -99,10 +109,7 @@ const proximasAulas = useMemo(() => {
     },
   ];
 
-  const avisos = [
-    "Consulta os materiais recentes da tua turma.",
-    "Mantém os teus dados de acesso em segurança.",
-  ];
+
 
   return (
     <div style={{ display: "grid", gap: 16 }}>
@@ -198,16 +205,64 @@ const proximasAulas = useMemo(() => {
             </div>
           </div>
 
-          
+          <div style={styles.resumoGrid}>
+  <div style={styles.card}>
+    <div style={styles.cardTitle}>Resumo académico</div>
+    <div style={styles.muted}>Acompanhamento rápido do teu desempenho.</div>
+
+    <div style={styles.resumoItems}>
+      <button style={styles.resumoItem} onClick={() => navigate("/aluno/notas")}>
+        <strong>Notas</strong>
+        <span>Consultar avaliações lançadas</span>
+      </button>
+
+      <button style={styles.resumoItem} onClick={() => navigate("/aluno/faltas")}>
+        <strong>Faltas</strong>
+        <span>Ver histórico de presenças</span>
+      </button>
+
+      <button style={styles.resumoItem} onClick={() => navigate("/aluno/materiais")}>
+        <strong>Materiais</strong>
+        <span>Abrir conteúdos da turma</span>
+      </button>
+
+      <button style={styles.resumoItem} onClick={() => navigate("/aluno/mensagens")}>
+        <strong>Mensagens</strong>
+        <span>Tirar dúvidas com professores</span>
+      </button>
+    </div>
+  </div>
+</div>
         </div>
 
-        <div style={{ display: "grid", gap: 16 }}>
-          <div style={styles.card}>
-          
+       <div style={{ display: "grid", gap: 16 }}>
+  <div style={styles.card}>
+    <div style={styles.cardTitle}>Avisos do Admin</div>
 
-           
+    <div style={{ marginTop: 14 }}>
+      {avisos.length === 0 ? (
+        <div style={styles.empty}>
+          Ainda não existem avisos da administração.
+        </div>
+      ) : (
+        avisos.slice(0, 5).map((aviso) => (
+          <div key={aviso.id} style={styles.noticeItem}>
+            <div style={styles.noticeDot}></div>
+
+            <div>
+              <strong>{aviso.titulo}</strong>
+
+              <div style={styles.smallMuted}>
+                {aviso.mensagem}
+              </div>
+            </div>
           </div>
-        </div>
+        ))
+      )}
+    </div>
+  </div>
+</div>
+
       </div>
       {horarioOpen && (
   <div style={styles.modalOverlay}>
@@ -599,5 +654,42 @@ fullTdStrong: {
 emptyCell: {
   color: "rgba(11,27,42,.35)",
   fontWeight: 800,
+},
+resumoGrid: {
+  display: "grid",
+  gridTemplateColumns: "1fr",
+  gap: 16,
+},
+
+resumoItems: {
+  display: "grid",
+  gridTemplateColumns: "repeat(2, 1fr)",
+  gap: 10,
+  marginTop: 12,
+},
+
+resumoItem: {
+  border: "1px solid rgba(11,27,42,.10)",
+  background: "rgba(11,27,42,.02)",
+  borderRadius: 16,
+  padding: 14,
+  textAlign: "left",
+  cursor: "pointer",
+  display: "grid",
+  gap: 6,
+  color: "#0B1B2A",
+},
+
+resumoItem: {
+  border: "1px solid rgba(11,27,42,.10)",
+  background: "rgba(11,27,42,.02)",
+  borderRadius: 16,
+  padding: 14,
+  textAlign: "left",
+  cursor: "pointer",
+  display: "grid",
+  gap: 6,
+  color: "#0B1B2A",
+  fontWeight: 700,
 },
 };

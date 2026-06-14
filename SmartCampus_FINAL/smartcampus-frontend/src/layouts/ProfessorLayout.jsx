@@ -9,6 +9,7 @@ import {
   FolderOpen,
   ClipboardPenLine,
   Info,
+  MessageSquare,
   Bell,
   PanelLeftClose,
   PanelLeftOpen,
@@ -39,7 +40,7 @@ const navItems = [
   { to: "/professor/turmas-disciplinas", label: "Turmas & Disciplinas", icon: BookOpen },
   { to: "/professor/materiais", label: "Materiais", icon: FolderOpen },
   { to: "/professor/notas", label: "Notas", icon: ClipboardPenLine },
- // { to: "/professor/mensagens", label: "Mensagens", icon: MessageSquare },
+ { to: "/professor/mensagens", label: "Mensagens", icon: MessageSquare },
   { to: "/professor/informacoes", label: "Informações", icon: Info },
 ];
 
@@ -341,10 +342,19 @@ async function carregarNotificacoes() {
 
               <div style={{ position: "relative" }}>
   <button
-    onClick={() => {
-      setOpenNotificacoes((v) => !v);
-      carregarNotificacoes();
-    }}
+   onClick={async () => {
+  const novoEstado = !openNotificacoes;
+  setOpenNotificacoes(novoEstado);
+
+  if (novoEstado) {
+    await carregarNotificacoes();
+    await http.post("/professor/notificacoes/ler");
+
+    setNotificacoes((prev) =>
+      prev.map((n) => ({ ...n, lida: true }))
+    );
+  }
+}}
     style={{
       width: 44,
       height: 44,

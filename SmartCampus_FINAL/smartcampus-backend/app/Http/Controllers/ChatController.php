@@ -4,6 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\Mensagemchat;
 use Illuminate\Http\Request;
+use App\Models\Notificacao;
+use App\Models\User;
+use App\Models\Atribuicao;
+use App\Models\Estudante;
 
 class ChatController extends Controller
 {
@@ -44,9 +48,78 @@ class ChatController extends Controller
             'lida' => false,
         ]);
 
+        $user = $request->user();
+
+if ($user->role === 'estudante') {
+    $atribuicao = Atribuicao::where('turma_id', $data['turma_id'])
+        ->where('disciplina_id', $data['disciplina_id'])
+        ->with(['disciplina', 'professor'])
+        ->first();
+
+    if ($atribuicao && $atribuicao->professor) {
+        Notificacao::create([
+            'user_id' => $atribuicao->professor->id,
+            'titulo' => 'Nova dúvida no chat',
+            'mensagem' => $user->name . ' enviou uma mensagem em ' . ($atribuicao->disciplina?->nome ?? 'uma disciplina') . '.',
+            'tipo' => 'chat',
+            'link' => '/professor/turma/' . $data['turma_id'] . '/disciplina/' . $data['disciplina_id'],
+            'lida' => false,
+        ]);
+    }
+
+    User::where('escola_id', $user->escola_id)
+        ->whereIn('role', ['admin_escola', 'admin'])
+        ->get()
+        ->each(function ($admin) use ($user, $atribuicao) {
+            Notificacao::create([
+                'user_id' => $admin->id,
+                'titulo' => 'Nova mensagem supervisionada',
+                'mensagem' => $user->name . ' enviou uma mensagem no chat de ' . ($atribuicao?->disciplina?->nome ?? 'uma disciplina') . '.',
+                'tipo' => 'chat',
+                'link' => '/admin/chats',
+                'lida' => false,
+            ]);
+        });
+}
+
+if ($user->role === 'professor') {
+    $estudantes = Estudante::where('sala_de_aula_id', $data['turma_id'])
+        ->whereNotNull('user_id')
+        ->get();
+
+    $atribuicao = Atribuicao::where('turma_id', $data['turma_id'])
+        ->where('disciplina_id', $data['disciplina_id'])
+        ->with('disciplina')
+        ->first();
+
+    foreach ($estudantes as $estudante) {
+        Notificacao::create([
+            'user_id' => $estudante->user_id,
+            'titulo' => 'Nova resposta no chat',
+            'mensagem' => $user->name . ' respondeu no chat de ' . ($atribuicao?->disciplina?->nome ?? 'uma disciplina') . '.',
+            'tipo' => 'chat',
+            'link' => '/aluno/mensagens?turma_id=' . $data['turma_id'] . '&disciplina_id=' . $data['disciplina_id'],
+            'lida' => false,
+        ]);
+    }
+
+    User::where('escola_id', $user->escola_id)
+        ->whereIn('role', ['admin_escola', 'admin'])
+        ->get()
+        ->each(function ($admin) use ($user, $atribuicao) {
+            Notificacao::create([
+                'user_id' => $admin->id,
+                'titulo' => 'Resposta supervisionada',
+                'mensagem' => $user->name . ' respondeu no chat de ' . ($atribuicao?->disciplina?->nome ?? 'uma disciplina') . '.',
+                'tipo' => 'chat',
+                'link' => '/admin/chats',
+                'lida' => false,
+            ]);
+        });
+}
+
         return response()->json([
-            'message' => 'Mensagem enviada com sucesso.',
-            'mensagem' => $mensagem->load([
+  'mensagem' => $mensagem->load([
     'remetente:id,name,role',
     'material.disciplina:id,nome',
 ]),

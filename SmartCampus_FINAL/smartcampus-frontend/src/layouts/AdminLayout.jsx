@@ -1,6 +1,7 @@
-import { useMemo, useState } from "react";
-import { NavLink, Outlet, useLocation } from "react-router-dom";
+import { useMemo, useState,useEffect} from "react";
+import { NavLink, Outlet, useLocation,useNavigate } from "react-router-dom";
 import LogoutButton from "../pages/components/LogoutButton";
+import http   from "../api/http";
 import { getUser } from "../api/auth";
 import {
   LayoutDashboard,
@@ -56,6 +57,9 @@ const navItems = [
 export default function AdminLayout() {
   const [collapsed, setCollapsed] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
+const [notificacoes, setNotificacoes] = useState([]);
+const [openNotificacoes, setOpenNotificacoes] = useState(false);
   const user = getUser?.();
 
   const currentTitle = useMemo(() => {
@@ -85,6 +89,19 @@ export default function AdminLayout() {
   const initials = userName.trim().charAt(0).toUpperCase();
 
   const sidebarWidth = collapsed ? 86 : 268;
+
+  useEffect(() => {
+  carregarNotificacoes();
+}, []);
+
+async function carregarNotificacoes() {
+  try {
+    const res = await http.get("/admin/notificacoes");
+    setNotificacoes(Array.isArray(res.data) ? res.data : []);
+  } catch {
+    setNotificacoes([]);
+  }
+}
 
   return (
     <div style={{ minHeight: "100vh", background: "#F5F9FC" }}>
@@ -134,26 +151,26 @@ export default function AdminLayout() {
             </div>
           )}
 
-          <button
-            onClick={() => setCollapsed(!collapsed)}
-            style={{
-              width: 38,
-              height: 38,
-              borderRadius: 12,
-              border: "1px solid rgba(255,255,255,.16)",
-              background: "rgba(255,255,255,.10)",
-              color: "#fff",
-              cursor: "pointer",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              transition: "all .2s ease",
-              flexShrink: 0,
-            }}
-            title={collapsed ? "Expandir menu" : "Fechar menu"}
-          >
-            {collapsed ? <PanelLeftOpen size={18} /> : <PanelLeftClose size={18} />}
-          </button>
+  <button
+  onClick={() => setCollapsed(!collapsed)}
+  style={{
+    width: 38,
+    height: 38,
+    borderRadius: 12,
+    border: "1px solid rgba(255,255,255,.16)",
+    background: "rgba(255,255,255,.10)",
+    color: "#fff",
+    cursor: "pointer",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    transition: "all .2s ease",
+    flexShrink: 0,
+  }}
+  title={collapsed ? "Expandir menu" : "Fechar menu"}
+>
+  {collapsed ? <PanelLeftOpen size={18} /> : <PanelLeftClose size={18} />}
+</button>
         </div>
 
         <nav style={{ display: "grid", gap: 8 }}>
@@ -271,24 +288,58 @@ export default function AdminLayout() {
                 flexWrap: "wrap",
               }}
             >
-              <button
-                style={{
-                  width: 44,
-                  height: 44,
-                  borderRadius: 14,
-                  border: "1px solid rgba(11,27,42,.08)",
-                  background: "#fff",
-                  color: "#0B1B2A",
-                  cursor: "pointer",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  boxShadow: "0 6px 18px rgba(11,27,42,.05)",
-                }}
-                title="Notificações"
-              >
-                <Bell size={20} />
-              </button>
+             <div style={{ position: "relative" }}>
+  <button
+    style={styles.bellBtn}
+    title="Notificações"
+    onClick={async () => {
+      const novoEstado = !openNotificacoes;
+      setOpenNotificacoes(novoEstado);
+
+      if (novoEstado) {
+        await carregarNotificacoes();
+        await http.post("/admin/notificacoes/ler");
+
+        setNotificacoes((prev) =>
+          prev.map((n) => ({ ...n, lida: true }))
+        );
+      }
+    }}
+  >
+    <Bell size={20} />
+
+    {notificacoes.some((n) => !n.lida) && (
+      <span style={styles.notificationDot} />
+    )}
+  </button>
+
+  {openNotificacoes && (
+    <div style={styles.notificationsBox}>
+      <div style={styles.notificationsTitle}>Notificações</div>
+
+      {notificacoes.length === 0 ? (
+        <div style={styles.notificationEmpty}>Sem notificações.</div>
+      ) : (
+        notificacoes.map((n) => (
+          <div
+            key={n.id}
+            style={styles.notificationItem}
+            onClick={() => {
+              if (n.link) navigate(n.link);
+              setOpenNotificacoes(false);
+            }}
+          >
+            <strong>{n.titulo}</strong>
+
+            <p style={styles.notificationText}>
+              {n.mensagem}
+            </p>
+          </div>
+        ))
+      )}
+    </div>
+  )}
+</div>
 
               <div
                 style={{
@@ -344,3 +395,70 @@ export default function AdminLayout() {
     </div>
   );
 }
+const styles = {
+  bellBtn: {
+    width: 44,
+    height: 44,
+    borderRadius: 14,
+    border: "1px solid rgba(11,27,42,.08)",
+    background: "#fff",
+    color: "#0B1B2A",
+    cursor: "pointer",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    boxShadow: "0 6px 18px rgba(11,27,42,.05)",
+    position: "relative",
+  },
+
+  notificationDot: {
+    position: "absolute",
+    top: 8,
+    right: 8,
+    width: 9,
+    height: 9,
+    borderRadius: "50%",
+    background: "#EF4444",
+    border: "2px solid #fff",
+  },
+
+  notificationsBox: {
+    position: "absolute",
+    top: 52,
+    right: 0,
+    width: 330,
+    background: "#fff",
+    border: "1px solid rgba(11,27,42,.10)",
+    borderRadius: 16,
+    boxShadow: "0 18px 50px rgba(0,0,0,.16)",
+    padding: 12,
+    zIndex: 99999,
+  },
+
+  notificationsTitle: {
+    fontWeight: 950,
+    color: "#0B1B2A",
+    marginBottom: 10,
+  },
+
+  notificationEmpty: {
+    color: "rgba(11,27,42,.6)",
+    fontWeight: 700,
+  },
+
+  notificationItem: {
+    padding: 10,
+    borderRadius: 12,
+    background: "rgba(37,99,235,.08)",
+    border: "1px solid rgba(11,27,42,.06)",
+    marginBottom: 8,
+    cursor: "pointer",
+  },
+
+  notificationText: {
+    margin: "4px 0 0",
+    fontSize: 13,
+    color: "rgba(11,27,42,.65)",
+    fontWeight: 650,
+  },
+};

@@ -1,10 +1,12 @@
-import { useState } from "react";
-import { NavLink, Outlet, useLocation } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
+import http from "../api/http";
 import {
   LayoutGrid,
   BookOpen,
   FolderOpen,
   ClipboardList,
+  AlertTriangle,
   TimerReset,
   LifeBuoy,
   Bell,
@@ -37,8 +39,11 @@ export default function StudentLayout() {
   const [supportOpen, setSupportOpen] = useState(false);
   const [supportMsg, setSupportMsg] = useState("");
   const [supportCategory, setSupportCategory] = useState("Materiais");
+  const [notificacoes, setNotificacoes] = useState([]);
+  const [openNotificacoes, setOpenNotificacoes] = useState(false);
   const user = getUser?.();
   const location = useLocation();
+  const navigate = useNavigate();
   const userName = user?.name || user?.username || "Aluno";
   const schoolName = user?.escola?.nome || "Colégio Henriques";
   const initials = userName.trim().charAt(0).toUpperCase();
@@ -51,6 +56,8 @@ export default function StudentLayout() {
       ? "Materiais"
       : location.pathname.includes("notas")
       ? "Notas"
+       : location.pathname.includes("faltas")
+      ? "faltas"
       : location.pathname.includes("pomodoro")
       ? "Pomodoro"
       : location.pathname.includes("informacoes")
@@ -64,11 +71,24 @@ export default function StudentLayout() {
     "/aluno/materiais": "Materiais disponibilizados pelos professores.",
     "/aluno/mensagens": "Conversa académica com os professores da tua turma.",
     "/aluno/notas": "Consulta as tuas notas e o histórico de faltas por disciplina.",
+    "/aluno/faltas": "Consulta o histórico de faltas por disciplina.",
     "/aluno/pomodoro": "Ferramenta de foco e produtividade.",
     "/aluno/informacoes":
   "Consulta os dados da tua conta e da escola associada.",
   };
   const currentSubtitle = subtitles[location.pathname] || "Área do aluno.";
+  useEffect(() => {
+  carregarNotificacoes();
+}, []);
+
+async function carregarNotificacoes() {
+  try {
+    const res = await http.get("/estudante/notificacoes");
+    setNotificacoes(Array.isArray(res.data) ? res.data : []);
+  } catch {
+    setNotificacoes([]);
+  }
+}
   function enviarSuporte() {
     if (!supportMsg.trim()) return;
     alert("Pedido de suporte enviado com sucesso.");
@@ -98,10 +118,15 @@ export default function StudentLayout() {
   <MessageCircle {...iconProps} />
   <span>Mensagens</span>
 </NavLink>
-            <NavLink to="/aluno/notas" style={linkStyle}>
-              <ClipboardList {...iconProps} />
-              <span> Faltas & Notas</span>
-            </NavLink>
+         <NavLink to="/aluno/faltas" style={linkStyle}>
+  <AlertTriangle {...iconProps} />
+  <span>Faltas</span>
+</NavLink>
+
+<NavLink to="/aluno/notas" style={linkStyle}>
+  <ClipboardList {...iconProps} />
+  <span>Notas</span>
+</NavLink>
             <NavLink to="/aluno/pomodoro" style={linkStyle}>
               <TimerReset {...iconProps} />
               <span>Pomodoro</span>
@@ -129,9 +154,63 @@ export default function StudentLayout() {
             <div style={styles.topSubtitle}>{currentSubtitle}</div>
           </div>
           <div style={styles.topActions}>
-            <button style={styles.bellBtn} title="Notificações">
-              <Bell size={20} />
-            </button>
+            <div style={{ position: "relative" }}>
+  <button
+    style={styles.bellBtn}
+    title="Notificações"
+   onClick={async () => {
+  const novoEstado = !openNotificacoes;
+
+  setOpenNotificacoes(novoEstado);
+
+  if (novoEstado) {
+    await carregarNotificacoes();
+
+    await http.post("/estudante/notificacoes/ler");
+
+    setNotificacoes((prev) =>
+      prev.map((n) => ({
+        ...n,
+        lida: true,
+      }))
+    );
+  }
+}}
+  >
+    <Bell size={20} />
+
+    {notificacoes.some((n) => !n.lida) && (
+      <span style={styles.notificationDot} />
+    )}
+  </button>
+
+  {openNotificacoes && (
+    <div style={styles.notificationsBox}>
+      <div style={styles.notificationsTitle}>Notificações</div>
+
+      {notificacoes.length === 0 ? (
+        <div style={styles.notificationEmpty}>Sem notificações.</div>
+      ) : (
+        notificacoes.map((n) => (
+          <div
+            key={n.id}
+            style={styles.notificationItem}
+            onClick={() => {
+              if (n.link) navigate(n.link);
+              setOpenNotificacoes(false);
+            }}
+          >
+            <strong>{n.titulo}</strong>
+
+            <p style={styles.notificationText}>
+              {n.mensagem}
+            </p>
+          </div>
+        ))
+      )}
+    </div>
+  )}
+</div>
             <div style={styles.userBox}>
               <div style={styles.avatar}>{initials}</div>
               <div>
@@ -422,4 +501,54 @@ const styles = {
     color: "#fff",
     background: "linear-gradient(135deg, #0A4174, #4E8EA2)",
   },
+  notificationDot: {
+  position: "absolute",
+  top: 8,
+  right: 8,
+  width: 9,
+  height: 9,
+  borderRadius: "50%",
+  background: "#EF4444",
+  border: "2px solid #fff",
+},
+
+notificationsBox: {
+  position: "absolute",
+  top: 52,
+  right: 0,
+  width: 330,
+  background: "#fff",
+  border: "1px solid rgba(11,27,42,.10)",
+  borderRadius: 16,
+  boxShadow: "0 18px 50px rgba(0,0,0,.16)",
+  padding: 12,
+  zIndex: 99999,
+},
+
+notificationsTitle: {
+  fontWeight: 950,
+  color: "#0B1B2A",
+  marginBottom: 10,
+},
+
+notificationEmpty: {
+  color: "rgba(11,27,42,.6)",
+  fontWeight: 700,
+},
+
+notificationItem: {
+  padding: 10,
+  borderRadius: 12,
+  background: "rgba(37,99,235,.08)",
+  border: "1px solid rgba(11,27,42,.06)",
+  marginBottom: 8,
+  cursor: "pointer",
+},
+
+notificationText: {
+  margin: "4px 0 0",
+  fontSize: 13,
+  color: "rgba(11,27,42,.65)",
+  fontWeight: 650,
+},
 };
