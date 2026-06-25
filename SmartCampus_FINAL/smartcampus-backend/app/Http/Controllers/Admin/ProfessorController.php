@@ -252,7 +252,7 @@ class ProfessorController extends Controller
             "SmartCampus: Novas credenciais.\n" .
             "Utilizador: {$user->username}\n" .
             "Senha: {$senhaTemporaria}\n" .
-            "Altere a senha no primeiro acesso.";
+            "Altere a senha sempre que desejar.";
         $smsSent = false;
         $emailSent = false;
         try {

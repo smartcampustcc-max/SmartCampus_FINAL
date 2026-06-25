@@ -19,10 +19,13 @@ use App\Http\Controllers\Admin\EstudanteController;
 use App\Http\Controllers\Admin\AvisoController;
 use App\Http\Controllers\Admin\HorarioController;
 use App\Http\Controllers\Admin\AdminChatController;
+use  App\Http\Controllers\Admin\RelatoriosController;
 
 /* ================= PROFESSOR ================= */
 use App\Http\Controllers\Professor\PainelController;
 use App\Http\Controllers\Professor\MateriaisController as ProfessorMateriaisController;
+
+
 
 /* ================= ALUNO ================= */
 use App\Http\Controllers\Estudante\PerfilController;
@@ -147,6 +150,11 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('turmas/{id}/adicionar-alunos', [SalaDeAulaController::class, 'adicionarAlunos']);
         Route::delete('turmas/{turmasId}/alunos/{alunoId}', [SalaDeAulaController::class, 'removerAluno']);
 
+        Route::get('relatorios/filtros', [RelatoriosController::class, 'filtros']);
+        Route::get('relatorios/faltas', [RelatoriosController::class, 'faltas']);
+        Route::get('relatorios/notas', [RelatoriosController::class, 'notas']);
+        Route::get('relatorios/desempenho', [RelatoriosController::class, 'desempenho']);
+
         Route::get('suportes', [SuporteController::class, 'index']);
         Route::put('suportes/{id}', [SuporteController::class, 'responder']);
 
@@ -167,7 +175,6 @@ Route::post('notificacoes/ler', function () {
 });
        
     });
-
     /*
     |--------------------------------------------------------------------------
     | PROFESSOR
@@ -203,6 +210,7 @@ Route::post('notificacoes/ler', function () {
 
 
         Route::get('materiais', [ProfessorMateriaisController::class, 'index']);
+       Route::get('/materiais/{id}/abrir', [MateriaisController::class, 'abrir']);
         Route::post('materiais', [ProfessorMateriaisController::class, 'store']);
         Route::delete('materiais/{id}', [ProfessorMateriaisController::class, 'destroy']);
         Route::get('materiais/{id}/visualizacoes', [ProfessorMateriaisController::class, 'visualizacoes']);

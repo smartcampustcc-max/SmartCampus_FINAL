@@ -51,12 +51,16 @@ class MateriaisController extends Controller
                 'message' => 'Não tens permissão para adicionar material nesta turma/disciplina.'
             ], 403);
         }
+$ficheiroPatch = null;
 
-        $ficheiroPatch = null;
-        if ($request->hasFile('ficheiro')) {
-            $ficheiroPatch = $request->file('ficheiro')
-                ->store('materiais', 'public');
-        }
+if ($request->hasFile('ficheiro')) {
+    $file = $request->file('ficheiro');
+    $nome = time() . '_' . $file->getClientOriginalName();
+
+    $file->move(public_path('materiais'), $nome);
+
+    $ficheiroPatch = 'materiais/' . $nome;
+}
 
         $material = Material::create([
             'turma_id'      => $data['turma_id'],
@@ -74,6 +78,7 @@ class MateriaisController extends Controller
             'message'  => 'Material adicionado com sucesso.',
             'material' => $material->load(['turma', 'disciplina']),
         ], 201);
+        
         $estudantes = Estudante::where('sala_de_aula_id', $material->turma_id)->get();
 
 foreach ($estudantes as $estudante) {
@@ -128,4 +133,18 @@ foreach ($estudantes as $estudante) {
 
         return response()->json(['message' => 'Material removido com sucesso.']);
     }
+    public function abrir($id)
+{
+    $material = Material::findOrFail($id);
+
+    if (!$material->ficheiro_path) {
+        return response()->json(['message' => 'Este material não possui ficheiro.'], 404);
+    }
+
+    if (!Storage::disk('public')->exists($material->ficheiro_path)) {
+        return response()->json(['message' => 'Ficheiro não encontrado.'], 404);
+    }
+
+    return Storage::disk('public')->response($material->ficheiro_path);
+}
 }

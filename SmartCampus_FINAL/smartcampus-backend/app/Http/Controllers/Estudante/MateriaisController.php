@@ -34,31 +34,30 @@ class MateriaisController extends Controller
         return response()->json($materiais);
     }
 
-    public function abrir(Request $request, $id)
-    {
-        $user      = $request->user();
-        $estudante = Estudante::where('user_id', $user->id)->first();
+ public function abrir(Request $request, $id)
+{
+    $user = $request->user();
+    $estudante = Estudante::where('user_id', $user->id)->first();
 
-        if (!$estudante) {
-            return response()->json(['message' => 'Estudante não encontrado.'], 404);
-        }
-
-        $material = Material::where('turma_id', $estudante->sala_de_aula_id)
-            ->findOrFail($id);
-
-        
-        MaterialVisualizacao::updateOrCreate([
-            'material_id' => $material->id,
-            'aluno_id'    => $user->id,
-        ], [
-            'opened_at' => now(),
-        ]);
-
-        return response()->json([
-            'material' => $material,
-            'url'      => $material->ficheiro_path
-                ? asset('storage/' . $material->ficheiro_path)
-                : $material->url,
-        ]);
+    if (!$estudante) {
+        return response()->json(['message' => 'Estudante não encontrado.'], 404);
     }
+
+    $material = Material::where('turma_id', $estudante->sala_de_aula_id)
+        ->findOrFail($id);
+
+    MaterialVisualizacao::updateOrCreate([
+        'material_id' => $material->id,
+        'aluno_id' => $user->id,
+    ], [
+        'opened_at' => now(),
+    ]);
+
+    return response()->json([
+        'material' => $material,
+        'url' => $material->ficheiro_path
+            ? asset($material->ficheiro_path)
+            : $material->url,
+    ]);
+}
 }
